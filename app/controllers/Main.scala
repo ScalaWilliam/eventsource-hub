@@ -11,6 +11,7 @@ import play.api.libs.EventSource.Event
 import play.api.mvc._
 import services.ChannelStore
 
+import scala.async.Async._
 import scala.concurrent.ExecutionContext
 
 /**
@@ -23,35 +24,39 @@ class Main @Inject()(channelStore: ChannelStore)(
     executionContext: ExecutionContext)
     extends AbstractController(components) { main =>
 
-  def getChannel(channelId: ChannelId) = Action {
+  def getChannel(channelId: ChannelId) = Action.async {
     request: Request[AnyContent] =>
       val atChannel = channelStore
         .AtChannel(channelId)
-      if (request.acceptedTypes
-            .exists(_.toString() == MimeTypes.EVENT_STREAM)) {
-        val events = request.headers.get(Main.LastEventIdHeader) match {
-          case Some(lastId) =>
-            atChannel.fileStore
-              .eventsFrom(lastId)
-              .concat(atChannel.pushEvents)
-          case None => atChannel.pushEvents
-        }
-        Ok.chunked(content = events.merge(Main.keepAliveEventSource))
-          .as(ContentTypes.EVENT_STREAM)
-      } else
-        Ok.sendPath(content = atChannel.fileStore.eventsPath)
+      async {
+        if (request.acceptedTypes
+              .exists(_.toString() == MimeTypes.EVENT_STREAM)) {
+          val events = request.headers.get(Main.LastEventIdHeader) match {
+            case Some(lastId) =>
+              await(atChannel.fileStore)
+                .eventsFrom(lastId)
+                .concat(await(atChannel.pushEvents))
+            case None => await(atChannel.pushEvents)
+          }
+          Ok.chunked(content = events.merge(Main.keepAliveEventSource))
+            .as(ContentTypes.EVENT_STREAM)
+        } else
+          Ok.sendPath(content = await(atChannel.fileStore).eventsPath)
+      }
   }
 
   def postChannel(channelId: ChannelId): Action[String] =
-    Action(parse.tolerantText) { request: Request[String] =>
+    Action.async(parse.tolerantText) { request: Request[String] =>
       val id = Instant.now().toString
       val event = Event(
         name = request.getQueryString(Main.EventQueryParameterName),
         data = request.body,
         id = Some(id)
       )
-      channelStore.AtChannel(channelId).push(event)
-      Created(id)
+      async {
+        await(channelStore.AtChannel(channelId).push(event))
+        Created(id)
+      }
     }
 
 }
