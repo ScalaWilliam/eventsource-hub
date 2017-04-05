@@ -22,27 +22,40 @@ $ curl -i http://localhost:9000/a-channel
 HTTP/1.1 200 OK
 Content-type: text/tab-separated-values
 
-<id>TAB<event>TAB<data>
-<id>TAB<event>TAB<data>
+<id><TAB><event><TAB><data>
+<id><TAB><event><TAB><data>
 ...
-<id>TAB<event>TAB<data>
+<id><TAB><event><TAB><data>
 ```
 
-To query new data: 
+To query new data as an infinite stream: 
 ```
 $ curl -H 'Accept: text/event-stream' -i http://localhost:9000/a-channel
 HTTP/1.1 200 OK
 Content-type: text/event-stream
 
-id: <id>
 event: <event>
+id: <id>
 data: <data>
 ... 
 ```
 
 To post an event:
 ```
-$ echo Some data | curl -d @- http://localhost:9000/a-channel
+$ echo Some data | curl -d @- http://localhost:9000/a-channel?event=type
+HTTP/1.1 201 Created
+...
+
+2017-04-05T11:40:10.793Z
+```
+
+Which will yield in the stream:
+
+```
+event: type
+id: 2017-04-05T11:40:10.793Z
+data: Some data
+
 ```
 
 ID by default is the current [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) timestamp in UTC. You may override it by specifying the `id` query parameter. It will be used as the [`Last-Event-ID`](https://www.w3.org/TR/eventsource/#last-event-id) index. We support resuming based on the last event as per specification.

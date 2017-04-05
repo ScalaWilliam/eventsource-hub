@@ -1,17 +1,45 @@
 package controllers
 
-import javax.inject.Inject
+import java.time.Instant
+import javax.inject._
 
+import akka.actor.Cancellable
+import akka.stream.scaladsl.Source
 import play.api.http.{ContentTypes, MimeTypes}
+import play.api.libs.EventSource.Event
+import play.api.libs.iteratee.Concurrent
+import play.api.libs.iteratee.streams.IterateeStreams
 import play.api.mvc._
 
+/**
+  * Forwards events from postChannel to aChannel via pushEvents.
+  * Singleton needed to keep 'pushEvents' constant.
+  */
+@Singleton
 class Main @Inject()(components: ControllerComponents)
     extends AbstractController(components) {
 
   def aChannel() = Action { request: Request[AnyContent] =>
     if (request.acceptedTypes.exists(_.toString() == MimeTypes.EVENT_STREAM)) {
-      Ok("").as(ContentTypes.EVENT_STREAM)
+      Ok.chunked(content = pushEvents.merge(Main.keepAliveEventSource))
+        .as(ContentTypes.EVENT_STREAM)
     } else Ok("").as(ContentTypes.withCharset(Main.TsvMimeType))
+  }
+
+  private val (enumerator, channel) = Concurrent.broadcast[Event]
+
+  private def pushEvents =
+    Source.fromPublisher(IterateeStreams.enumeratorToPublisher(enumerator))
+
+  def postChannel() = Action(parse.tolerantText) { request: Request[String] =>
+    val id = Instant.now().toString
+    val event = Event(
+      name = request.getQueryString("event"),
+      data = request.body,
+      id = Some(id)
+    )
+    channel.push(event)
+    Created(id)
   }
 
 }
@@ -19,5 +47,11 @@ class Main @Inject()(components: ControllerComponents)
 object Main {
 
   val TsvMimeType = "text/tab-separated-values"
+
+  /** Needed to prevent premature close of connection if not enough events coming through **/
+  val keepAliveEventSource: Source[Event, Cancellable] = {
+    import concurrent.duration._
+    Source.tick(10.seconds, 10.seconds, Event(""))
+  }
 
 }
