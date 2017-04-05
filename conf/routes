@@ -1,2 +1,2 @@
-GET         /a-channel        @controllers.Main.aChannel
-POST        /a-channel        @controllers.Main.postChannel
+GET         /:channelId        @controllers.Main.getChannel(channelId: model.ChannelId)
+POST        /:channelId        @controllers.Main.postChannel(channelId: model.ChannelId)
