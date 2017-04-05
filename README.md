@@ -12,6 +12,7 @@ To enable low friction event sourcing.
 
 To run:
 ```
+$ docker pull scalawilliam/eventsource-hub
 $ docker run -p 9000:9000 scalawilliam/eventsource-hub
 ```
 
@@ -44,7 +45,7 @@ To post an event:
 $ echo Some data | curl -d @- http://localhost:9000/a-channel
 ```
 
-ID by default is the current ISO timestamp. You may override it by specifying the `id` query parameter. It will be used as the `Last-ID` index.
+ID by default is the current ISO timestamp. You may override it by specifying the `id` query parameter. It will be used as the `Last-ID` index. We support resuming based on the last event as per specification.
 
 If you want to specify the `event` field which is optional, use the `event` query parameter.
 
