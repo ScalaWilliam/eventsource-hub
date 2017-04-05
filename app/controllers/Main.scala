@@ -26,7 +26,11 @@ class Main @Inject()(fileStore: FileStore)(
 
   def aChannel() = Action { request: Request[AnyContent] =>
     if (request.acceptedTypes.exists(_.toString() == MimeTypes.EVENT_STREAM)) {
-      Ok.chunked(content = pushEvents.merge(Main.keepAliveEventSource))
+      val events = request.headers.get(Main.LastEventIdHeader) match {
+        case Some(lastId) => fileStore.eventsFrom(lastId).concat(pushEvents)
+        case None => pushEvents
+      }
+      Ok.chunked(content = events.merge(Main.keepAliveEventSource))
         .as(ContentTypes.EVENT_STREAM)
     } else Ok.sendPath(content = fileStore.eventsPath)
   }
@@ -54,6 +58,8 @@ class Main @Inject()(fileStore: FileStore)(
 }
 
 object Main {
+
+  val LastEventIdHeader = "Last-Event-ID"
 
   val EventQueryParameterName = "event"
 
