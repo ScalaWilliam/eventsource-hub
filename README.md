@@ -10,13 +10,37 @@ To enable low friction [event sourcing](https://martinfowler.com/eaaDev/EventSou
 
 # What it does
 
-To run:
+Receives events via POST, retains them and also publishes them to all current subscribers.
+
+# What to use it for
+
+Event Sourcing. You push events and your clients can read either input or their own output when restarted. Then you don't need a complex relational database and all your state is reproducibly stored in memory. You can rebuild that state with [`scan` or `scanLeft`](https://www.scalawilliam.com/most-important-streaming-abstraction/).
+
+You get both batch and reactive mode by having access to a finite historical file and an infinite update stream.
+
+# How to use it
+
+Client components:
+
+- [eventsource for Node.js](https://www.npmjs.com/package/eventsource).
+- [Alpakka's Server-sent Events Connector](http://developer.lightbend.com/docs/alpakka/current/sse.html).
+- If other good libraries with recovery exist, make a PR.
+- Or just plain curl if you want to access your data directly, as shown below.
+
+## Run the server
+To run with [Docker](https://www.docker.com/what-docker) and a [mounted volume](https://docs.docker.com/engine/tutorials/dockervolumes/) in `events` directory (files are `.tsv`):
 ```
 $ docker pull scalawilliam/eventsource-hub
-$ docker run -p 9000:9000 scalawilliam/eventsource-hub
+$ mkdir -p events
+$ docker run -v $(PWD)/events:/opt/docker/events -p 9000:9000 scalawilliam/eventsource-hub
 ```
 
-To query new data as an infinite stream: 
+## Query infinite stream of new events
+
+Channel names must match pattern `[A-Za-z0-9_-]{4,64}`.
+
+Each distinct channel name maps to a different channel, and each is backed by a different storage file `events/<name>.tsv`.
+
 ```
 $ curl -H 'Accept: text/event-stream' -i http://localhost:9000/a-channel
 HTTP/1.1 200 OK
@@ -28,7 +52,7 @@ data: <data>
 ... 
 ```
 
-To post an event:
+## Post a new event
 ```
 $ echo Some data | curl -d @- http://localhost:9000/a-channel?event=type
 HTTP/1.1 201 Created
@@ -37,7 +61,7 @@ HTTP/1.1 201 Created
 2017-04-05T11:40:10.793Z
 ```
 
-Which will yield in the stream:
+Which will yield an entry in the stream such as:
 
 ```
 event: type
@@ -46,11 +70,13 @@ data: Some data
 
 ```
 
-ID by default is the current [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) timestamp in UTC. You may override it by specifying the `id` query parameter. It will be used as the [`Last-Event-ID`](https://www.w3.org/TR/eventsource/#last-event-id) index. We support resuming based on the last event as per specification.
+The query parameter `event` is optional.
 
-If you want to specify the `event` field which is optional, use the `event` query parameter.
+ID by default is the current [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) timestamp in UTC. You may override it by specifying the `id` query parameter. It will be used as the [`Last-Event-ID`](https://www.w3.org/TR/eventsource/#last-event-id) index. We support resuming based on the last event as per specification. ID is not necessarily unique.
 
-To query all channel's historical data (ie replay):
+Behaviour is undefined if you send data in binary. Behaviour is also undefined if you send more than a multi-line request body.
+
+## Retrieve past events
 ```
 $ curl -i http://localhost:9000/a-channel
 HTTP/1.1 200 OK
@@ -61,14 +87,6 @@ Content-type: text/tab-separated-values
 ...
 <id><TAB><event><TAB><data>
 ```
-
-This data is stored in the same format in `events/` directory as a TSV file. In a Docker container, it's `/opt/docker/events/`.
-
-Channel names must match pattern `[A-Za-z0-9_-]{4,64}`. Each distinct channel name maps to a different channel, and each is backed by a different storage file `events/<name>.tsv`.
-
-Behaviour is undefined if you send data in binary. Behaviour is also undefined if you send more than a multi-line request body.
-
-ID is not necessarily unique, even though milliseconds may be included.
 
 Access control is not in scope. Please use an [API gateway](https://en.wikipedia.org/wiki/API_management) or [nginx](https://www.nginx.com/solutions/api-gateway/) for that.
 
