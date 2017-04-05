@@ -1,0 +1,24 @@
+language: scala
+
+cache:
+  directories:
+    - $HOME/.ivy2/cache
+    - $HOME/.sbt/boot/
+
+jdk:
+  - oraclejdk8
+
+services:
+  - docker
+
+script:
+  - sbt test "set dockerUpdateLatest := true" 'set packageName in Docker := "play-container"' docker:publishLocal
+
+after_success:
+  - if [ "$TRAVIS_BRANCH" == "master" ]; then
+      docker login -u="$DOCKERHUB_USERNAME" -p="$DOCKERHUB_PASSWORD";
+      sbt "set dockerUpdateLatest := true" docker:publish;
+    fi
+
+after_success:
+  - test $TRAVIS_BRANCH = "master" && test $TRAVIS_PULL_REQUEST = "false" && docker login -u scalawilliam -p $DOCKERHUB_PASSWORD && sbt "set dockerUpdateLatest := true" publish
