@@ -12,7 +12,7 @@ To enable low friction event sourcing.
 
 To run:
 ```
-$ docker run -p 9000 -it scalawilliam/eventsource-hub
+$ docker run -p 9000:9000 scalawilliam/eventsource-hub
 ```
 
 To query all channel's historical data (ie replay):
