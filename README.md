@@ -2,7 +2,7 @@
 
 > Lightweight HTTP message queue using [EventSource](https://www.w3.org/TR/2012/WD-eventsource-20120426/) with file persistence.
 
-Ideas based on: https://plus.google.com/103489630517643950426/posts/RFhSAGMP4Em
+Ideas based on: https://plus.google.com/103489630517643950426/posts/RFhSAGMP4Em and implemented in Scala - you can find another similar software called [ssehub](https://github.com/vgno/ssehub), written in C++.
 
 # Purpose
 
