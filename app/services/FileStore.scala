@@ -1,11 +1,11 @@
 package services
 
 import java.nio.file.{Files, Path, Paths, StandardOpenOption}
-import javax.inject.{Inject, Singleton}
 
 import akka.stream.IOResult
 import akka.stream.scaladsl.{FileIO, Framing, Source}
 import akka.util.ByteString
+import model.ChannelId
 import play.api.libs.EventSource.Event
 
 import scala.concurrent.Future
@@ -13,10 +13,7 @@ import scala.concurrent.Future
 /**
   * Created by me on 05/04/2017.
   */
-@Singleton
 class FileStore(val eventsPath: Path) {
-
-  @Inject def this() = this(Paths.get(FileStore.DefaultFile))
 
   Files.createDirectories(eventsPath.getParent)
 
@@ -57,6 +54,8 @@ class FileStore(val eventsPath: Path) {
 
 object FileStore {
 
-  val DefaultFile = "events/aChannel.log"
+  def fromChannelId(channelId: ChannelId): FileStore = {
+    new FileStore(Paths.get(s"events/${channelId.value}.tsv"))
+  }
 
 }
