@@ -5,6 +5,7 @@ import javax.inject._
 
 import akka.actor.Cancellable
 import akka.stream.scaladsl.Source
+import model.ChannelId
 import play.api.http.{ContentTypes, MimeTypes}
 import play.api.libs.EventSource.Event
 import play.api.libs.iteratee.Concurrent
@@ -24,7 +25,7 @@ class Main @Inject()(fileStore: FileStore)(
     executionContext: ExecutionContext)
     extends AbstractController(components) { main =>
 
-  def aChannel() = Action { request: Request[AnyContent] =>
+  def getChannel(channelId: ChannelId) = Action { request: Request[AnyContent] =>
     if (request.acceptedTypes.exists(_.toString() == MimeTypes.EVENT_STREAM)) {
       val events = request.headers.get(Main.LastEventIdHeader) match {
         case Some(lastId) => fileStore.eventsFrom(lastId).concat(pushEvents)
@@ -40,7 +41,7 @@ class Main @Inject()(fileStore: FileStore)(
   private def pushEvents =
     Source.fromPublisher(IterateeStreams.enumeratorToPublisher(enumerator))
 
-  def postChannel(): Action[String] = Action(parse.tolerantText) {
+  def postChannel(channelId: ChannelId): Action[String] = Action(parse.tolerantText) {
     request: Request[String] =>
       val id = Instant.now().toString
       val event = Event(
