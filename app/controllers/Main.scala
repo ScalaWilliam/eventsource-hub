@@ -10,20 +10,25 @@ import play.api.libs.EventSource.Event
 import play.api.libs.iteratee.Concurrent
 import play.api.libs.iteratee.streams.IterateeStreams
 import play.api.mvc._
+import services.FileStore
+
+import scala.concurrent.ExecutionContext
 
 /**
   * Forwards events from postChannel to aChannel via pushEvents.
   * Singleton needed to keep 'pushEvents' constant.
   */
 @Singleton
-class Main @Inject()(components: ControllerComponents)
-    extends AbstractController(components) {
+class Main @Inject()(fileStore: FileStore)(
+    implicit components: ControllerComponents,
+    executionContext: ExecutionContext)
+    extends AbstractController(components) { main =>
 
   def aChannel() = Action { request: Request[AnyContent] =>
     if (request.acceptedTypes.exists(_.toString() == MimeTypes.EVENT_STREAM)) {
       Ok.chunked(content = pushEvents.merge(Main.keepAliveEventSource))
         .as(ContentTypes.EVENT_STREAM)
-    } else Ok("").as(ContentTypes.withCharset(Main.TsvMimeType))
+    } else Ok.sendPath(content = fileStore.eventsPath)
   }
 
   private val (enumerator, channel) = Concurrent.broadcast[Event]
@@ -31,20 +36,26 @@ class Main @Inject()(components: ControllerComponents)
   private def pushEvents =
     Source.fromPublisher(IterateeStreams.enumeratorToPublisher(enumerator))
 
-  def postChannel() = Action(parse.tolerantText) { request: Request[String] =>
-    val id = Instant.now().toString
-    val event = Event(
-      name = request.getQueryString("event"),
-      data = request.body,
-      id = Some(id)
-    )
-    channel.push(event)
-    Created(id)
+  def postChannel(): Action[String] = Action(parse.tolerantText) {
+    request: Request[String] =>
+      val id = Instant.now().toString
+      val event = Event(
+        name = request.getQueryString(Main.EventQueryParameterName),
+        data = request.body,
+        id = Some(id)
+      )
+      val eventLine =
+        s"${event.id.getOrElse("")}\t${event.name.getOrElse("")}\t${event.data}"
+      fileStore.appendLine(eventLine)
+      channel.push(event)
+      Created(id)
   }
 
 }
 
 object Main {
+
+  val EventQueryParameterName = "event"
 
   val TsvMimeType = "text/tab-separated-values"
 
