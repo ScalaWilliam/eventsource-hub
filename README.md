@@ -16,20 +16,6 @@ $ docker pull scalawilliam/eventsource-hub
 $ docker run -p 9000:9000 scalawilliam/eventsource-hub
 ```
 
-To query all channel's historical data (ie replay):
-```
-$ curl -i http://localhost:9000/a-channel
-HTTP/1.1 200 OK
-Content-type: text/tab-separated-values
-
-<id><TAB><event><TAB><data>
-<id><TAB><event><TAB><data>
-...
-<id><TAB><event><TAB><data>
-```
-
-This data is stored in the same format in `events/` directory as a TSV file. In a Docker container, it's `/opt/docker/events/`.
-
 To query new data as an infinite stream: 
 ```
 $ curl -H 'Accept: text/event-stream' -i http://localhost:9000/a-channel
@@ -63,6 +49,22 @@ data: Some data
 ID by default is the current [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) timestamp in UTC. You may override it by specifying the `id` query parameter. It will be used as the [`Last-Event-ID`](https://www.w3.org/TR/eventsource/#last-event-id) index. We support resuming based on the last event as per specification.
 
 If you want to specify the `event` field which is optional, use the `event` query parameter.
+
+To query all channel's historical data (ie replay):
+```
+$ curl -i http://localhost:9000/a-channel
+HTTP/1.1 200 OK
+Content-type: text/tab-separated-values
+
+<id><TAB><event><TAB><data>
+<id><TAB><event><TAB><data>
+...
+<id><TAB><event><TAB><data>
+```
+
+This data is stored in the same format in `events/` directory as a TSV file. In a Docker container, it's `/opt/docker/events/`.
+
+Channel names must match pattern `[A-Za-z0-9_-]{4,64}`. Each distinct channel name maps to a different channel, and each is backed by a different storage file `events/<name>.tsv`.
 
 Behaviour is undefined if you send data in binary.
 
