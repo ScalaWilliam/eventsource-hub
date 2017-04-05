@@ -66,7 +66,7 @@ This data is stored in the same format in `events/` directory as a TSV file. In 
 
 Channel names must match pattern `[A-Za-z0-9_-]{4,64}`. Each distinct channel name maps to a different channel, and each is backed by a different storage file `events/<name>.tsv`.
 
-Behaviour is undefined if you send data in binary.
+Behaviour is undefined if you send data in binary. Behaviour is also undefined if you send more than a multi-line request body.
 
 ID is not necessarily unique, even though milliseconds may be included.
 
