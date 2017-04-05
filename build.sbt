@@ -1,5 +1,6 @@
 name := "eventsource-hub"
 scalaVersion := "2.12.1"
+libraryDependencies += "com.typesafe.play" %% "play-iteratees-reactive-streams" % "2.6.1"
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.1" % "test"
 enablePlugins(PlayScala)
 enablePlugins(DockerPlugin)
