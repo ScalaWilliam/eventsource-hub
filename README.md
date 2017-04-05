@@ -28,6 +28,8 @@ Content-type: text/tab-separated-values
 <id><TAB><event><TAB><data>
 ```
 
+This data is stored in the same format in `events/` directory as a TSV file. In a Docker container, it's `/opt/docker/events/`.
+
 To query new data as an infinite stream: 
 ```
 $ curl -H 'Accept: text/event-stream' -i http://localhost:9000/a-channel
