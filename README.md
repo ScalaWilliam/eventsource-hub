@@ -2,7 +2,7 @@
 
 > Lightweight HTTP message queue using [EventSource](https://www.w3.org/TR/2012/WD-eventsource-20120426/) with file persistence.
 
-Ideas based on: https://plus.google.com/103489630517643950426/posts/RFhSAGMP4Em and implemented in Scala - you can find another similar software called [ssehub](https://github.com/vgno/ssehub), written in C++.
+Ideas based on: https://plus.google.com/103489630517643950426/posts/RFhSAGMP4Em and implemented in Scala. There's another similar and active project in C++ called [ssehub](https://github.com/vgno/ssehub).
 
 # Purpose
 
@@ -76,11 +76,11 @@ You can push NDJSON, TSV, CSV or any other plain text.
 
 # Technical choices
 
-I chose this stack because of my experience and familiarity.
+I chose this stack because of my experience and familiarity with it.
 
 - [Scala](http://www.scala-lang.org/news/) and [Play framework](https://www.playframework.com/documentation/2.6.x/Migration26) because I'm experienced in it. See [ActionFPS](https://github.com/ScalaWilliam/ActionFPS) and [Git Watch](http://git.watch/) which also use Event Source.
 - Build tool: [SBT](https://www.scalawilliam.com/essential-sbt/) default for Play and supports Docker.
 - [Docker](https://www.docker.com/what-docker) lets us easily distribute the application.
 - [Travis CI](https://en.wikipedia.org/wiki/Travis_CI) for automated build & publishing of Docker artifacts because it's de facto standard for open source projects.
-
-This repository is based on https://github.com/ScalaWilliam/play-docker-hub-example.
+- This repository is based on https://github.com/ScalaWilliam/play-docker-hub-example.
+- I'm taking something akin to [Bug Driven Development](https://blogs.oracle.com/toddfast/entry/bug_driven_development)
