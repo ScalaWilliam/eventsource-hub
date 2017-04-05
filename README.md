@@ -68,7 +68,7 @@ Channel names must match pattern `[A-Za-z0-9_-]{4,64}`. Each distinct channel na
 
 Behaviour is undefined if you send data in binary.
 
-If you send multiple lines, they will be turned into multiple events each with the same ID (ID is indicative of order but otherwise not unique).
+ID is not necessarily unique, even though milliseconds may be included.
 
 Access control is not in scope. Please use an [API gateway](https://en.wikipedia.org/wiki/API_management) or [nginx](https://www.nginx.com/solutions/api-gateway/) for that.
 
