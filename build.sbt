@@ -7,5 +7,5 @@ enablePlugins(GitVersioning)
 git.useGitDescribe := true
 dockerRepository := Some("scalawilliam")
 dockerBaseImage := "java:openjdk-8-jre"
-dockerExposedPorts := Seq(9000, 9443)
+dockerExposedPorts := Seq(9000)
 dockerExposedVolumes := Seq("/opt/docker/events")
