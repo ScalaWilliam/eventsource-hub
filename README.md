@@ -52,6 +52,10 @@ Behaviour is undefined if you send data in binary.
 
 If you send multiple lines, they will be turned into multiple events each with the same ID (ID is indicative but not unique).
 
+Access control is not in scope. Please use an API gateway or nginx for that.
+
+# Technical choices
+
 Based on https://github.com/ScalaWilliam/play-docker-hub-example.
 
-Access control is not in scope. Please use an API gateway or nginx for that.
+I have a lot of experience with Event Source, [Scala](http://www.scala-lang.org/news/) and the [Play framework](https://www.playframework.com/documentation/2.6.x/Migration26). See [ActionFPS](https://github.com/ScalaWilliam/ActionFPS) and [Git Watch](http://git.watch/). Everything is built with [SBT](https://www.scalawilliam.com/essential-sbt/) because it's easy to do Dockerization. [Docker](https://www.docker.com/what-docker) lets us easily distribute the application. I'm using [Travis CI](https://en.wikipedia.org/wiki/Travis_CI) for automated build & publishing of Docker artifacts.
