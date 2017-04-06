@@ -21,6 +21,10 @@ class FileStore(val eventsPath: Path) {
     Files.createFile(eventsPath)
   }
 
+
+  private val raf = new java.io.RandomAccessFile(eventsPath.toFile, "rw").getChannel
+  private val lock = raf.lock()
+
   /**
     * Typically used to achieve the Last-Event-ID part of the EventSource spec
     * that allows consumers to resume from where they left off in case of a failure
@@ -43,11 +47,12 @@ class FileStore(val eventsPath: Path) {
 
   /** Use approach from https://gist.github.com/ScalaWilliam/37c4ef3c41e656a6d3c02d992f5c6191 **/
   def appendLine(line: String): Unit = {
-    val raf = new java.io.RandomAccessFile(eventsPath.toFile, "rw").getChannel
-    val lock = raf.lock()
     val lineBytes = (line + "\n").getBytes("UTF-8")
-    try Files.write(eventsPath, lineBytes, StandardOpenOption.APPEND)
-    finally lock.release()
+    Files.write(eventsPath, lineBytes, StandardOpenOption.APPEND)
+  }
+
+  def close(): Unit = {
+    lock.release()
   }
 
 }

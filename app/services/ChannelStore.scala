@@ -9,6 +9,7 @@ import model.ChannelId
 import play.api.libs.EventSource.Event
 import play.api.libs.iteratee.Concurrent
 import play.api.libs.iteratee.streams.IterateeStreams
+import play.api.inject.ApplicationLifecycle
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -16,7 +17,7 @@ import scala.concurrent.{ExecutionContext, Future}
   * Created by me on 06/04/2017.
   */
 @Singleton
-class ChannelStore @Inject()()(implicit executionContext: ExecutionContext) {
+class ChannelStore @Inject()(applicationLifecycle: ApplicationLifecycle)(implicit executionContext: ExecutionContext) {
   cs =>
 
   type Channel = (FileStore, Source[Event, NotUsed], Concurrent.Channel[Event])
@@ -63,5 +64,7 @@ class ChannelStore @Inject()()(implicit executionContext: ExecutionContext) {
         case (_, source, _) => source
       }
   }
+
+  applicationLifecycle.addStopHook(() => Future.successful(channelsData.get().foreach(_._2._1.close())))
 
 }
