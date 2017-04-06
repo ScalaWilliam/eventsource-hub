@@ -141,4 +141,7 @@ I chose this stack because of my experience and familiarity with it.
 # Licence
 
 - Copyright 2017 Apt Elements
-- [GNU AGPLv3](https://choosealicense.com/licenses/agpl-3.0/), because I would like any improvements to be incorporated into this application. Anything proprietary and custom such as request filters and authentication modules should be separated anyway for SRP.
+- I think [GNU AGPLv3](https://choosealicense.com/licenses/agpl-3.0/) is what I would like but it's not clear to me. I would like:
+  - Any code modifications to be open sourced and preferably integrated.
+  - Application to be usable as part of say a CloudFormation stack without having to reveal anything outside of the application.
+  - Application to be usable commercially without restriction.
