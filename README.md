@@ -165,6 +165,14 @@ I chose this stack because of my experience and familiarity with it.
 - This repository is based on https://github.com/ScalaWilliam/play-docker-hub-example.
 - I'm taking something akin to [Bug Driven Development](https://blogs.oracle.com/toddfast/entry/bug_driven_development). Write a specification first & then create bugs to make the code meet it.
 
+# Other notes
+To regenerate TOC we use [markdown-toc](https://github.com/jonschlinkert/markdown-toc):
+
+```bash
+$ npm install -g markdown-toc
+$ markdown-toc -i README.md
+```
+
 # Licence
 
 - Copyright 2017 Apt Elements
