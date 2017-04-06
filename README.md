@@ -84,6 +84,8 @@ ID by default is the current [ISO 8601](https://en.wikipedia.org/wiki/ISO_8601) 
 
 Behaviour is undefined if you send data in binary. Behaviour is also undefined if you send more than a multi-line request body.
 
+Events are ordered.
+
 ## Retrieve past events
 ```
 $ curl -i http://localhost:9000/a-channel
