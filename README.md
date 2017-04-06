@@ -88,9 +88,17 @@ Content-type: text/tab-separated-values
 <id><TAB><event><TAB><data>
 ```
 
-Access control is not in scope. Please use an [API gateway](https://en.wikipedia.org/wiki/API_management) or [nginx](https://www.nginx.com/solutions/api-gateway/) for that.
+## Event payload
 
 You can push NDJSON, TSV, CSV or any other plain text.
+
+This is especially perfect for time series data.
+
+## Access control
+
+Not in scope. You can use an [API gateway](https://en.wikipedia.org/wiki/API_management) or [nginx](https://www.nginx.com/solutions/api-gateway/) for that.
+
+There's the [`nginx_http_http_auth_request` module](http://nginx.org/en/docs/http/ngx_http_auth_request_module.html) which you can use [with Play framework](https://groups.google.com/d/msg/play-framework/IRVgowWxE58/4SIQZ_ksCAAJ). [Example in pure nginx](https://developers.shopware.com/blog/2015/03/02/sso-with-nginx-authrequest-module/).
 
 # Technical choices
 
@@ -102,3 +110,8 @@ I chose this stack because of my experience and familiarity with it.
 - [Travis CI](https://en.wikipedia.org/wiki/Travis_CI) for automated build & publishing of Docker artifacts because it's de facto standard for open source projects.
 - This repository is based on https://github.com/ScalaWilliam/play-docker-hub-example.
 - I'm taking something akin to [Bug Driven Development](https://blogs.oracle.com/toddfast/entry/bug_driven_development)
+
+# Licence
+
+- Copyright 2017 Apt Elements
+- [GNU AGPLv3](https://choosealicense.com/licenses/agpl-3.0/), because I would like any improvements to be incorporated into this application. Anything proprietary and custom such as request filters and authentication modules should be separated anyway for SRP.
