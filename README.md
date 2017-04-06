@@ -48,16 +48,26 @@ $ mkdir -p events
 $ docker run -v $(PWD)/events:/opt/docker/events -p 9000:9000 scalawilliam/eventsource-hub
 ```
 
-### Alternative: run on the cloud
+### Alternative: run on AWS Cloud
 
 [![Install](https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn%7Eempire%7Cturl%7Ehttps://s3.amazonaws.com/eventsource-hub/cloudformation.yml)
 
-Using [`aws-cli`](http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-set-up.html) and [`create-stack`](http://docs.aws.amazon.com/cli/latest/reference/cloudformation/create-stack.html):
+Using [`aws-cli`](http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-set-up.html) and [`cloudformation create-stack`](http://docs.aws.amazon.com/cli/latest/reference/cloudformation/create-stack.html):
 
 ```
-$ aws create-stack \
-  --stack-name sample-stack
+$ aws cloudformation create-stack \
+  --region eu-west-1 \
+  --stack-name sample-stack \
   --template-url https://s3.amazonaws.com/eventsource-hub/cloudformation.yml
+```
+
+or if running from within this repository:
+
+```
+$ aws cloudformation create-stack \
+  --region eu-west-1 \
+  --stack-name sample-stack \
+  --template-body file://$PWD/deployment/cloudformation.yml
 ```
 
 ## Query infinite stream of new events
@@ -153,7 +163,7 @@ I chose this stack because of my experience and familiarity with it.
 - [Docker](https://www.docker.com/what-docker) lets us easily distribute the application.
 - [Travis CI](https://en.wikipedia.org/wiki/Travis_CI) for automated build & publishing of Docker artifacts because it's de facto standard for open source projects.
 - This repository is based on https://github.com/ScalaWilliam/play-docker-hub-example.
-- I'm taking something akin to [Bug Driven Development](https://blogs.oracle.com/toddfast/entry/bug_driven_development)
+- I'm taking something akin to [Bug Driven Development](https://blogs.oracle.com/toddfast/entry/bug_driven_development). Write a specification first & then create bugs to make the code meet it.
 
 # Licence
 
