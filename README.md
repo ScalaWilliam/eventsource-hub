@@ -110,6 +110,23 @@ Not in scope. You can use an [API gateway](https://en.wikipedia.org/wiki/API_man
 
 There's the [`nginx_http_http_auth_request` module](http://nginx.org/en/docs/http/ngx_http_auth_request_module.html) which you can use [with Play framework](https://groups.google.com/d/msg/play-framework/IRVgowWxE58/4SIQZ_ksCAAJ). [Example in pure nginx](https://developers.shopware.com/blog/2015/03/02/sso-with-nginx-authrequest-module/).
 
+# Performance
+
+As of dda4a0c, if we run:
+
+```
+$ echo $(seq 1 200) > sample-file.txt
+$ ab -k -n 20000000 -c 100 -p sample-file.txt http://localhost:9000/target
+```
+
+And then start a listener:
+```
+$ curl -s -H 'Accept: text/event-stream' -i http://localhost:9000/stuff1 |grep data | pv -l -a > /dev/null
+[2.02k/s]
+```
+
+Which is 2000 events/second. This can and will be improved. Yet this is more than sufficient for many systems.
+
 # Technical choices
 
 I chose this stack because of my experience and familiarity with it.
