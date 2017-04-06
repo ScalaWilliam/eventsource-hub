@@ -47,7 +47,7 @@ class Main @Inject()(channelStore: ChannelStore)(
 
   def postChannel(channelId: ChannelId): Action[String] =
     Action.async(parse.tolerantText) { request: Request[String] =>
-      val id = Instant.now().toString
+      val id = request.getQueryString(Main.IdQueryParameter).getOrElse(Instant.now().toString)
       val event = Event(
         name = request.getQueryString(Main.EventQueryParameterName),
         data = request.body,
@@ -62,6 +62,8 @@ class Main @Inject()(channelStore: ChannelStore)(
 }
 
 object Main {
+
+  val IdQueryParameter = "id"
 
   val LastEventIdHeader = "Last-Event-ID"
 
