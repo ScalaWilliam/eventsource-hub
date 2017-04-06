@@ -12,6 +12,11 @@ To enable low friction [event sourcing](https://martinfowler.com/eaaDev/EventSou
 
 Receives events via POST, retains them and also publishes them to all current subscribers.
 
+![](https://docs.google.com/drawings/d/1XD7II5eU2ena75-7Cb19cAbdG8kYotN27Ki7EMTJ99w/pub?w=640&h=428)
+
+See/comment on the <a href="https://docs.google.com/drawings/d/1XD7II5eU2ena75-7Cb19cAbdG8kYotN27Ki7EMTJ99w/edit?usp=sharing">Google Docs diagram here</a>
+
+
 # What to use it for
 
 Event Sourcing. You push events and your clients can read either input or their own output when restarted. Then you don't need a complex relational database and all your state is reproducibly stored in memory. You can rebuild that state with [`scan` or `scanLeft`](https://www.scalawilliam.com/most-important-streaming-abstraction/).
