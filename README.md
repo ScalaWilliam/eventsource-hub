@@ -20,12 +20,20 @@ You get both batch and reactive mode by having access to a finite historical fil
 
 # How to use it
 
-Client components:
+## Client libraries
 
 - [eventsource for Node.js](https://www.npmjs.com/package/eventsource).
 - [Alpakka's Server-sent Events Connector](http://developer.lightbend.com/docs/alpakka/current/sse.html).
 - If other good libraries with recovery exist, make a PR.
 - Or just plain curl if you want to access your data directly, as shown below.
+
+## (typical) Event Sourcing usage
+
+```
+event stream = historical events + live events
+```
+
+You can also load the historical data in batch for performance reasons but that is out of scope of this document.
 
 ## Run the server
 To run with [Docker](https://www.docker.com/what-docker) and a [mounted volume](https://docs.docker.com/engine/tutorials/dockervolumes/) in `events` directory (files are `.tsv`):
