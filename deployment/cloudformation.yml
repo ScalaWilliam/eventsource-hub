@@ -1,0 +1,38 @@
+---
+AWSTemplateFormatVersion: '2010-09-09'
+Description: EventSource-Hub stack with public and encrypted access, backed by EFS and running as a single instance.
+Parameters:
+  ImageRef:
+    Type: String
+    Description: Image to use
+    Default: scalawilliam/eventsource-hub:latest
+Resources:
+  Cluster:
+    Type: AWS::ECS::Cluster
+  TaskDefinition:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      ContainerDefinitions:
+      - Memory: 256
+        PortMappings:
+        - HostPort: 9000
+          ContainerPort: 9000
+          Protocol: tcp
+        Essential: true
+        Name: EventSource-Hub
+        Image:
+          Ref: ImageRef
+        Cpu: 512
+      Volumes: []
+  Service:
+    Type: AWS::ECS::Service
+    Properties:
+      Cluster:
+        Ref: Cluster
+      DesiredCount: '1'
+      TaskDefinition:
+        Ref: TaskDefinition
+Outputs:
+  Url:
+    Description: URL to access
+    Value: I don't know to compute this.
