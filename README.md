@@ -48,28 +48,6 @@ $ mkdir -p events
 $ docker run -v $(PWD)/events:/opt/docker/events -p 9000:9000 scalawilliam/eventsource-hub
 ```
 
-### Alternative: run on AWS Cloud
-
-[![Install](https://s3.amazonaws.com/cloudformation-examples/cloudformation-launch-stack.png)](https://console.aws.amazon.com/cloudformation/home?region=us-east-1#cstack=sn%7Eempire%7Cturl%7Ehttps://s3.amazonaws.com/eventsource-hub/cloudformation.yml)
-
-Using [`aws-cli`](http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-set-up.html) and [`cloudformation create-stack`](http://docs.aws.amazon.com/cli/latest/reference/cloudformation/create-stack.html):
-
-```
-$ aws cloudformation create-stack \
-  --region eu-west-1 \
-  --stack-name sample-stack \
-  --template-url https://s3.amazonaws.com/eventsource-hub/cloudformation.yml
-```
-
-or if running from within this repository:
-
-```
-$ aws cloudformation create-stack \
-  --region eu-west-1 \
-  --stack-name sample-stack \
-  --template-body file://$PWD/deployment/cloudformation.yml
-```
-
 ## Query infinite stream of new events
 
 Channel names must match pattern `[A-Za-z0-9_-]{4,64}`.
