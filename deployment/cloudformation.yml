@@ -1,9 +1,0 @@
-Description: >
-    This template:
-      * Deploys the Docker image of this project to ECS
-      * Makes it available via a public IP
-      * Makes the ECS instance publicly accessible
-      * As output, returns an HTTP address to access the ECS instance
-    More inspiration for CloudFormations:
-      * https://github.com/awslabs/ecs-refarch-cloudformation/
-
